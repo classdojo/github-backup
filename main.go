@@ -180,7 +180,7 @@ func (app *GithubBackup) cleanup() {
 func (app *GithubBackup) login() {
 	ctx := context.Background()
         ts := oauth2.StaticTokenSource(
-          &oauth2.Token{AccessToken: "... your access token ..."},
+          &oauth2.Token{AccessToken: app.config.GithubToken},
         )
         tc := oauth2.NewClient(ctx, ts)
 	app.client = github.NewClient(tc)
