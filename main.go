@@ -44,7 +44,6 @@ func (c *Config) printAll() {
 	fmt.Println("S3Bucket: ", c.S3Bucket)
 	fmt.Println("AwsAccessKey: ", c.AwsAccessKey)
 	fmt.Println("AwsRegion: ", c.AwsRegion)
-	fmt.Println("Github Token: ", c.GithubToken)
 	fmt.Println("Organisations: ", c.Organisations)
 }
 
