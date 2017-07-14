@@ -19,6 +19,7 @@ import (
 	"github.com/joho/godotenv"
 	"os/exec"
 	"golang.org/x/oauth2"
+	"compress/gzip"
 )
 
 // constants definitions used by the app.
@@ -227,7 +228,7 @@ func (app *GithubBackup) cloneRepository(repo *github.Repository, repoPath strin
 
 	app.compress(repoPath, repoPath+"/../")
 	os.RemoveAll(repoPath)
-	repoBundle := fmt.Sprintf("%s.tar", repoPath)
+	repoBundle := fmt.Sprintf("%s.tar.gz", repoPath)
 	app.uploadFileToS3(repoBundle)
 
 }
@@ -248,12 +249,15 @@ func (app *GithubBackup) downloadAll(organisation string) {
 // compress will create tarballs of cloned repositories.
 func (app *GithubBackup) compress(source, target string) error {
 	filename := filepath.Base(source)
-	target = filepath.Join(target, fmt.Sprintf("%s.tar", filename))
+	target = filepath.Join(target, fmt.Sprintf("%s.tar.gz", filename))
 	tarFile, err := os.Create(target)
 	checkErr(err)
 	defer tarFile.Close()
+	
+	gz := gzip.NewWriter(tarFile)
+	defer gz.Close()
 
-	tarball := tar.NewWriter(tarFile)
+	tarball := tar.NewWriter(gz)
 	defer tarball.Close()
 
 	info, err := os.Stat(source)
