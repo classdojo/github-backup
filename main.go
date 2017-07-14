@@ -18,6 +18,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/joho/godotenv"
 	"os/exec"
+	"golang.org/x/oauth2"
 )
 
 // constants definitions used by the app.
@@ -32,8 +33,7 @@ type Config struct {
 	AwsAccessKey string
 	AwsSecretAccessKey string
 	AwsRegion string
-	Username string
-	Password string
+	GithubToken string
 	Organisations []string `yaml:"organisations"`
 	KeepLastBackupDays int `yaml:"keep_last_backup_days"`
 }
@@ -43,13 +43,13 @@ func (c *Config) printAll() {
 	fmt.Println("S3Bucket: ", c.S3Bucket)
 	fmt.Println("AwsAccessKey: ", c.AwsAccessKey)
 	fmt.Println("AwsRegion: ", c.AwsRegion)
-	fmt.Println("Github User: ", c.Username)
+	fmt.Println("Github Token: ", c.GithubToken)
 	fmt.Println("Organisations: ", c.Organisations)
 }
 
 func (c *Config) checkOrFail() {
 	dirty := len(c.AwsAccessKey) == 0 || len(c.AwsSecretAccessKey) == 0 || len(c.AwsRegion) == 0
-	dirty = dirty || len(c.S3Bucket) == 0 || len(c.Username) == 0 || len(c.Password) == 0
+	dirty = dirty || len(c.S3Bucket) == 0 || len(c.GithubToken) == 0
 
 	if dirty {
 		c.printAll()
@@ -72,8 +72,7 @@ func readConfig() *Config {
 	config.AwsAccessKey = os.Getenv("AWS_ACCESS_KEY_ID")
 	config.AwsSecretAccessKey = os.Getenv("AWS_SECRET_ACCESS_KEY")
 	config.AwsRegion = os.Getenv("AWS_REGION")
-	config.Username = os.Getenv("GITHUB_USERNAME")
-	config.Password = os.Getenv("GITHUB_PASSWORD")
+	config.GithubToken = os.Getenv("GITHUB_TOKEN")
 
 	config.checkOrFail()
 	return &config
@@ -179,10 +178,12 @@ func (app *GithubBackup) cleanup() {
 
 // login method will use provided Github credentials and retrieve authentication token.
 func (app *GithubBackup) login() {
-	auth := github.BasicAuthTransport{
-		Username:app.config.Username, Password: app.config.Password, OTP: "", Transport: nil,
-	}
-	app.client = github.NewClient(auth.Client())
+	ctx := context.Background()
+        ts := oauth2.StaticTokenSource(
+          &oauth2.Token{AccessToken: "... your access token ..."},
+        )
+        tc := oauth2.NewClient(ctx, ts)
+	app.client = github.NewClient(tc)
 }
 
 // getRepositories will fetch all repositories for specified organisations in config.
