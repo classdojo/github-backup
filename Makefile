@@ -19,6 +19,12 @@ release:
 
 test:
 	go test . -v
+	
+install:
+	go get github.com/google/go-github/github
+	go get github.com/aws/aws-sdk-go/aws
+	go get github.com/joho/godotenv
+	go get golang.org/x/oauth2
 
 
 clean:
