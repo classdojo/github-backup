@@ -212,11 +212,7 @@ func (app *GithubBackup) cloneRepository(repo *github.Repository, repoPath strin
 	fmt.Printf("[+] Trying to clone %s.\n", *repo.FullName)
 
 	cloneUrl := *repo.CloneURL
-	credentialsUrl := fmt.Sprintf("https://%s:%s@%s",
-						os.Getenv("GITHUB_USERNAME"), os.Getenv("GITHUB_PASSWORD"),
-						cloneUrl[8:])
-
-	cmd := exec.Command("git", "clone", "--mirror", credentialsUrl, repoPath)
+	cmd := exec.Command("git", "clone", "--mirror", cloneUrl, repoPath)
 	if err := cmd.Run(); err != nil {
 		fmt.Println("[!] git error: ", err)
 		fmt.Println(">> git clone ", *repo.CloneURL, repoPath)
