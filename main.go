@@ -245,7 +245,7 @@ func (app *GithubBackup) downloadAll(organisation string) {
 		path := fmt.Sprintf(TMP_REPO_PATH, app.createdAt, organisation, *repo.Name)
 		fmt.Printf("[+] Spawning GIT_CLONE routine: %s \n", *repo.CloneURL)
 		app.wg.Add(1)
-		go app.cloneRepository(repo, path)
+		app.cloneRepository(repo, path)
 	}
 }
 
