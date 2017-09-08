@@ -149,7 +149,11 @@ func (app *GithubBackup) cleanup() {
 	var marker string
 
 	for {
-		resp, _ := app.getS3Page(marker)
+		resp, err := app.getS3Page(marker)
+		if err != nil {
+			fmt.Println("Error listing objects from S3: %+v", err)
+			panic(err) // Let's panic for now - TODO: figure out the right fix
+		}
 		lastKey := resp.Contents[len(resp.Contents) - 1].Key
 		objRefs = append(objRefs, resp.Contents...)
 
