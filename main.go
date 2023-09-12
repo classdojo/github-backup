@@ -217,7 +217,7 @@ func (app *GithubBackup) cloneRepository(repo *github.Repository, repoPath strin
 	fmt.Printf("[+] Trying to clone %s.\n", *repo.FullName)
 
 	cloneUrl := *repo.CloneURL
-	cmd := exec.Command("git", "clone", "-–depth", "1", "--mirror", cloneUrl, repoPath)
+	cmd := exec.Command("git", "clone", "--depth", "1", "--mirror", cloneUrl, repoPath)
 	if err := cmd.Run(); err != nil {
 		fmt.Println("[!] git error: ", err)
 		fmt.Println(">> git clone ", *repo.CloneURL, repoPath)
