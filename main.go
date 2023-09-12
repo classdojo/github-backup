@@ -1,25 +1,26 @@
 package main
 
 import (
+	"archive/tar"
+	"compress/gzip"
+	"context"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 	"sync"
-	"archive/tar"
-	"io"
 	"time"
-	"context"
-	"os"
-	"fmt"
-	"path/filepath"
-	"io/ioutil"
-	"gopkg.in/yaml.v2"
-	"github.com/google/go-github/github"
+
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/aws"
+	"github.com/google/go-github/github"
 	"github.com/joho/godotenv"
-	"os/exec"
 	"golang.org/x/oauth2"
-	"compress/gzip"
+	"gopkg.in/yaml.v2"
 )
 
 // constants definitions used by the app.
@@ -216,7 +217,7 @@ func (app *GithubBackup) cloneRepository(repo *github.Repository, repoPath strin
 	fmt.Printf("[+] Trying to clone %s.\n", *repo.FullName)
 
 	cloneUrl := *repo.CloneURL
-	cmd := exec.Command("git", "clone", "--mirror", cloneUrl, repoPath)
+	cmd := exec.Command("git", "clone", "-–depth", "1", "--mirror", cloneUrl, repoPath)
 	if err := cmd.Run(); err != nil {
 		fmt.Println("[!] git error: ", err)
 		fmt.Println(">> git clone ", *repo.CloneURL, repoPath)
