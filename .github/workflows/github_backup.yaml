@@ -5,7 +5,7 @@ on:
 env:
   S3_BUCKET: classdojo-github-backup
   AWS_REGION: us-east-1
-  GO111MODULE: auto
+
       
 jobs:
   do_stuff:
