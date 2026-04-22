@@ -9,7 +9,7 @@ env:
       
 jobs:
   do_stuff:
-    runs-on: ["self-hosted", "github-backup"]
+    runs-on: ["github-backup"]
 
     steps:
       - name: Checkout sources
